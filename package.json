@@ -1,0 +1,22 @@
+{
+  "name": "subresource-integrity-fallback",
+  "version": "1.0.0",
+  "description": "Subresource Integrity fallback script",
+  "main": "dist/sri.min.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JackuB/subresource-integrity-fallback.git"
+  },
+  "keywords": [
+    "subresource",
+    "integrity",
+    "sri",
+    "security"
+  ],
+  "author": "JackuB",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JackuB/subresource-integrity-fallback/issues"
+  },
+  "homepage": "https://sri.js.org"
+}

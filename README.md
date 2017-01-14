@@ -1,2 +1,3 @@
-# subresource-integrity-fallback
-Subresource Integrity fallback script
+# Subresource Integrity fallback
+## For usage and other details see [sri.js.org](https://sri.js.org)
+
