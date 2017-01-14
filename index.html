@@ -37,76 +37,47 @@
       <li>When downloading resource fails (or fallback is not available) script fires an event to notify user that something went wrong</li>
     </ol>
 
-    <h3>Code</h3>
-    <p>Following code must be placed in <code>&lt;head&gt;</code> before any resource using <code>integrity</code> attribute.</p>
+    <h2>How to use</h2>
+    <h3>Add SRI fallback code to the header</h3>
+    <p>Code must be placed in <code>&lt;head&gt;</code> before any resource using <code>integrity</code> attribute.</p>
 
-    <pre><code class="language-js">try {(function() {
-// Function called on failure:
-// - `Error` as first argument
-// - `bool` whether it was a fallback failure
-var loadErrCb = window.resourceLoadError;
-
-// Internal way to recognize fallback loads
-var retryAttr = 'data-sri-fallback-retry';
-
-// HTML attribute used to describe fallback URL
-var fbAttr = 'data-sri-fallback';
-
-var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-// Browsers without MO won't support SRI
-if(MutationObserver) {
-  new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) { mutation.addedNodes.forEach(processNode); });
-  }).observe(document, { childList: true, subtree: true });
-}
-
-var processNode = function(node) {
-  var tagName = (node.tagName || '').toLowerCase();
-  var tagAttribute = null;
-  if (
-    (
-      (tagName === 'link' && node.href && (tagAttribute = 'href'))
-      || (tagName === 'script' && node.src && (tagAttribute = 'src'))
-    ) && node.integrity && !node.getAttribute(retryAttr)
-  ) {
-    node.onerror = function(e) {
-      if (node.getAttribute(fbAttr)) {
-        var fb = document.createElement(node.tagName);
-        fb.integrity = node.integrity;
-        fb.crossOrigin = node.crossOrigin;
-        fb.rel = node.rel;
-        fb.setAttribute(retryAttr, '1');
-        fb.type = node.type;
-        fb[tagAttribute] = node.getAttribute(fbAttr);
-        fb.onerror = function(e) {
-          loadErrCb(e, true);
-        };
-        document.head.appendChild(fb);
-      } else {
-        loadErrCb(e, false);
-      }
-    };
-  }
-};
-})();} catch(e) {console.error(e)};
-    </code></pre>
-
-    <p>And its minified version <em>(~400b gzipped)</em>, also on <code><a href="">npm - </a></code></p>
+    <p>Its minified version <em>(~400b gzipped)</em>, also on <code><a href="https://www.npmjs.com/package/subresource-integrity-fallback">npm/subresource-integrity-fallback</a></code>:</p>
 
     <pre><code class="language-js">try{(function(){var d=window.resourceLoadError,c=window.MutationObserver||window.WebKitMutationObserver;c&&(new c(function(a){a.forEach(function(a){a.addedNodes.forEach(f)})})).observe(document,{childList:!0,subtree:!0});var f=function(a){var c=(a.tagName||"").toLowerCase(),e=null;("link"===c&&a.href&&(e="href")||"script"===c&&a.src&&(e="src"))&&a.integrity&&!a.getAttribute("data-sri-fallback-retry")&&(a.onerror=function(b){a.getAttribute("data-sri-fallback")?(b=document.createElement(a.tagName),
 b.integrity=a.integrity,b.crossOrigin=a.crossOrigin,b.rel=a.rel,b.setAttribute("data-sri-fallback-retry","1"),b.type=a.type,b[e]=a.getAttribute("data-sri-fallback"),b.onerror=function(a){d(a,!0)},document.head.appendChild(b)):d(b,!1)})}})()}catch(d){console.error(d)};</code></pre>
 
-    <h2>Other considerations</h2>
-    Have a reason to use it.
-    You should use HTTPS and send no-transform https://www.w3.org/TR/SRI/#proxies
-    Using this together with <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">CSP</a> is a good idea.
+    <h3>Add resource fallback data attributes</h3>
+    <p>Then you need to supply <code>data-sri-fallback</code> attribute on any resource with <code>integrity</code> check. Example use:</p>
 
-    <h2>Thanks to</h2>
+    <pre><code class="language-html">&lt;script
+src=&quot;https://cdn.example.com/app.js&quot;
+data-sri-fallback=&quot;https://example.com/app.js&quot;
+integrity=&quot;sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC&quot;
+crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;</code></pre>
+
+    <p>It might be a good idea to either serve fallback resources from same server that serves the actual page or setup a secondary CDN as a fallback.</p>
+
+    <h3>Define a behavior on failure</h3>
+    <p>Last missing piece is the <code>window.resourceLoadError</code> function, that will be called when resource with <code>integrity</code> check fails to load - as explained above, this reason can come either from normal network problems or resource tampering.</p>
+
+    <pre><code class="language-js">// In the &lt;head&gt;
+window.resourceLoadError = function(err, isRetry) {
+  if (isRetry) {
+    return letUserKnowThereMightBeTamperingHappenign(err);
+  }
+  return letUserKnowSomethingFailedToLoad(err);
+}
+// SRI Fallback code below this...</code></pre>
+
+    <h2>Other considerations</h2>
+    <p>Have a reason to use it. SRI is not a free lunch, be sure you need it and are ready to spend some resources on it. You should <a href="https://www.w3.org/TR/SRI/#proxies">send <code>no-transform</code> header</a> from your CDN. Using this together with <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">CSP</a> is a good idea.</p>
+
+    <h2>Big thanks to</h2>
     <ul>
       <li><a href="https://github.com/cyph/sri-fallback">sri-fallback</a></li>
       <li><a href="http://stackoverflow.com/a/3219767/3484158">This SO answer</a></li>
     </ul>
   </main>
-  <script src="prism-min.js"></script>
+  <script src="prism.js"></script>
 </body>
 </html>
