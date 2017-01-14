@@ -70,7 +70,11 @@ window.resourceLoadError = function(err, isRetry) {
 // SRI Fallback code below this...</code></pre>
 
     <h2>Other considerations</h2>
-    <p>Have a reason to use it. SRI is not a free lunch, be sure you need it and are ready to spend some resources on it. You should <a href="https://www.w3.org/TR/SRI/#proxies">send <code>no-transform</code> header</a> from your CDN. Using this together with <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">CSP</a> is a good idea.</p>
+    <ul>
+      <li>Have a reason to use it. SRI is not a free lunch, be sure you need it and are ready to spend some resources on it.</li>
+      <li>You should <a href="https://www.w3.org/TR/SRI/#proxies">send <code>no-transform</code> header</a> from your CDN.</li>
+      <li>Using this together with <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">CSP</a> is a good idea.</li>
+    </ul>
 
     <h2>Big thanks to</h2>
     <ul>
