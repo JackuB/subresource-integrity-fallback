@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Subresource Integrity Fallback</title>
   <link rel="stylesheet" type="text/css" href="markdown.css">
+  <meta name="description" content="Subresource Integrity fallback script">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="theme-color" content="#ffffff">
 </head>
 <body>
   <main>
@@ -27,26 +36,23 @@
     <h3>Strategy</h3>
     <p>Script is downloaded, but before its execution, SRI hash is checked against the downloaded resource. If hash check fails, <a href="https://www.w3.org/TR/SRI/#handling-integrity-violations">error event is fired</a> and resource is not executed. This error is not propagated to the <code>window.onerror</code> and <em>afaik</em> can't be distinguished from other errors. So we need to catch all of them.</p>
 
-    <p>To catch <code>script/link</code> errors, we can use <code>onerror</code> handler. But we need to hook it right as the resource is added to the DOM. For that we can use <a href="https://developer.mozilla.org/cs/docs/Web/API/MutationObserver">MutationObserver</a>.</p>
+    <p>To catch <code>script/link</code> errors, we can use <code><a href="https://developer.mozilla.org/cs/docs/Web/API/GlobalEventHandlers/onerror">onerror</a></code> handler. But we need to hook it right as the resource is added to the DOM. For that we can use <a href="https://developer.mozilla.org/docs/Web/API/MutationObserver">MutationObserver</a>.</p>
 
     <h3>Fallback flow</h3>
     <ol>
       <li>Monitor DOM for a new <code>script/link</code> elements with <code>integrity</code> attribute</li>
       <li>Add <code>onerror</code> handler to those</li>
       <li>If <code>onerror</code> is fired, try to load fallback resource specified on the element</li>
-      <li>When downloading resource fails (or fallback is not available) script fires an event to notify user that something went wrong</li>
+      <li>When downloading fallback resource fails (or fallback is not available) script fires an event to notify user that something went wrong</li>
     </ol>
 
     <h2>How to use</h2>
-    <h3>Add SRI fallback code to the header</h3>
-    <p>Code must be placed in <code>&lt;head&gt;</code> before any resource using <code>integrity</code> attribute.</p>
+    <h3>1) Add <a href="https://github.com/JackuB/subresource-integrity-fallback/tree/master/dist">SRI fallback code</a> to the header</h3>
+    <p>Code must be placed in <code>&lt;head&gt;</code> before any resource using <code>integrity</code> attribute. Its minified version <em>(~400b gzipped)</em>, also on <code><a href="https://www.npmjs.com/package/subresource-integrity-fallback">npm</a></code>:</p>
 
-    <p>Its minified version <em>(~400b gzipped)</em>, also on <code><a href="https://www.npmjs.com/package/subresource-integrity-fallback">npm/subresource-integrity-fallback</a></code>:</p>
+    <p><strong><code>npm i subresource-integrity-fallback -S</code></strong></p>
 
-    <pre><code class="language-js">try{(function(){var d=window.resourceLoadError,c=window.MutationObserver||window.WebKitMutationObserver;c&&(new c(function(a){a.forEach(function(a){a.addedNodes.forEach(f)})})).observe(document,{childList:!0,subtree:!0});var f=function(a){var c=(a.tagName||"").toLowerCase(),e=null;("link"===c&&a.href&&(e="href")||"script"===c&&a.src&&(e="src"))&&a.integrity&&!a.getAttribute("data-sri-fallback-retry")&&(a.onerror=function(b){a.getAttribute("data-sri-fallback")?(b=document.createElement(a.tagName),
-b.integrity=a.integrity,b.crossOrigin=a.crossOrigin,b.rel=a.rel,b.setAttribute("data-sri-fallback-retry","1"),b.type=a.type,b[e]=a.getAttribute("data-sri-fallback"),b.onerror=function(a){d(a,!0)},document.head.appendChild(b)):d(b,!1)})}})()}catch(d){console.error(d)};</code></pre>
-
-    <h3>Add resource fallback data attributes</h3>
+    <h3>2) Add resource fallback data attributes</h3>
     <p>Then you need to supply <code>data-sri-fallback</code> attribute on any resource with <code>integrity</code> check. Example use:</p>
 
     <pre><code class="language-html">&lt;script
@@ -57,7 +63,7 @@ crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;</code></pre>
 
     <p>It might be a good idea to either serve fallback resources from same server that serves the actual page or setup a secondary CDN as a fallback.</p>
 
-    <h3>Define a behavior on failure</h3>
+    <h3>3) Define a behavior on failure</h3>
     <p>Last missing piece is the <code>window.resourceLoadError</code> function, that will be called when resource with <code>integrity</code> check fails to load - as explained above, this reason can come either from normal network problems or resource tampering.</p>
 
     <pre><code class="language-js">// In the &lt;head&gt;
@@ -83,5 +89,14 @@ window.resourceLoadError = function(err, isRetry) {
     </ul>
   </main>
   <script src="prism.js"></script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-90409315-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 </body>
 </html>
