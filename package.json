@@ -20,9 +20,11 @@
   },
   "homepage": "https://sri.js.org",
   "scripts": {
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "build": "uglifyjs --compress --mangle --output dist/sri.min.js -- src/sri.js"
   },
   "devDependencies": {
-    "semantic-release": "^8.0.3"
+    "semantic-release": "^8.0.3",
+    "uglify-js": "^3.1.2"
   }
 }
