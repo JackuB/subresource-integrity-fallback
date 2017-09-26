@@ -39,7 +39,8 @@ var processNode = function(node) {
         fb.onerror = function(e) {
           loadErrCb(e, true);
         };
-        document.head.appendChild(fb);
+        //replace node wherever it is (could be in <head> or <body> tags)
+        node.parentNode.replaceChild(fb, node);
       } else {
         loadErrCb(e, false);
       }
