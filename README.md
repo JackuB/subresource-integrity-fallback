@@ -72,10 +72,6 @@ window.resourceLoadError = function(err, isRetry) {
 * You should [send `no-transform` header][10] from your CDN.
 * Using this together with [CSP][11] is a good idea.
 
-## Big thanks to
-
-## Made by [JM][12]
-
 [1]: https://mdn.io/SubresourceIntegrity
 [2]: http://caniuse.com/#feat=subresource-integrity
 [3]: https://www.youtube.com/watch?v=XQmBXEZEYtg
@@ -87,6 +83,5 @@ window.resourceLoadError = function(err, isRetry) {
 [9]: https://www.npmjs.com/package/subresource-integrity-fallback
 [10]: https://www.w3.org/TR/SRI/#proxies
 [11]: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
-[12]: http://mikul.as
 
   
