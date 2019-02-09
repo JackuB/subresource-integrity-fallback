@@ -20,11 +20,17 @@
   },
   "homepage": "https://sri.js.org",
   "scripts": {
+    "test": "cypress run",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
-    "build": "uglifyjs --compress --mangle --output dist/sri.min.js -- src/sri.js"
+    "cypress:open": "cypress open",
+    "serve": "npm run build && http-server ./ -p 8080",
+    "build": "terser src/sri.js --compress --mangle --output dist/sri.min.js"
   },
   "devDependencies": {
+    "cypress": "^3.1.5",
+    "http-server": "^0.11.1",
     "semantic-release": "^8.0.3",
-    "uglify-js": "^3.1.2"
-  }
+    "terser": "^3.16.1"
+  },
+  "dependencies": {}
 }

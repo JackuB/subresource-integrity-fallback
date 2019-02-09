@@ -1,0 +1,1 @@
+document.body.innerText = 'Compromised script loaded';
