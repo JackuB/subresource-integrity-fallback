@@ -84,4 +84,8 @@ window.resourceLoadError = function(err, isRetry) {
 [10]: https://www.w3.org/TR/SRI/#proxies
 [11]: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 
+## Contributing/developing
 
+- Install dependencies: `npm install`
+- Build the `/dist` and serve the static files: `npm run serve`
+- Test/play with Cypress: `npm run cypress:open`
