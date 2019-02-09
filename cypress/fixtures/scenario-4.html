@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>SRI test page</title>
+  <script>
+  window.resourceLoadError = function(err, isRetry) {
+    if (isRetry) {
+      return document.body.innerText = 'resourceLoadError - Loading original and fallback failed';
+    }
+    return document.body.innerText = 'resourceLoadError - Loading original failed';
+  }
+  </script>
+  <script src="../../dist/sri.min.js"></script>
+</head>
+<body>
+  Hello world
+</body>
+<script
+  integrity="sha384-NOPErJIrkeihvBqc462zAEWV6zORyz5ndLEcrgV7E9AGgfWHIQmDY3LOuW6gNdp0BnT"
+  data-sri-fallback="fallback.js"
+  src="original.js"></script>
+</html>

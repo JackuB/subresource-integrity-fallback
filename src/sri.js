@@ -2,15 +2,15 @@ try {(function() {
 // Function called on failure:
 // - `Error` as first argument
 // - `bool` whether it was a fallback failure
-var loadErrCb = window.resourceLoadError || function() {};
+const loadErrCb = window.resourceLoadError || (() => {});
 
 // Internal way to recognize fallback loads
-var retryAttr = 'data-sri-fallback-retry';
+const retryAttr = 'data-sri-fallback-retry';
 
 // HTML attribute used to describe fallback URL
-var fbAttr = 'data-sri-fallback';
+const fbAttr = 'data-sri-fallback';
 
-var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+const MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 // Browsers without MO won't support SRI
 if(MutationObserver) {
   new MutationObserver(function(mutations) {
@@ -20,8 +20,8 @@ if(MutationObserver) {
   }).observe(document, { childList: true, subtree: true });
 }
 
-var processNode = function(node) {
-  var tagName = (node.tagName || '').toLowerCase();
+const processNode = function(node) {
+  const tagName = (node.tagName || '').toLowerCase();
   if (
     (tagName === 'link' || tagName === 'script')
     && node.integrity
@@ -29,13 +29,21 @@ var processNode = function(node) {
   ) {
     node.onerror = function(e) {
       if (node.getAttribute(fbAttr)) {
-        var fb = node.cloneNode();
+        const fb = document.createElement(tagName);
+        const parent = node.parentNode;
+
         fb.setAttribute(retryAttr, '1');
+        fb.setAttribute('integrity', node.integrity);
+
+        if (node.src) fb.setAttribute('src', node.getAttribute(fbAttr));
+        if (node.href) fb.setAttribute('href', node.getAttribute(fbAttr));
+
         fb.onerror = function(e) {
           loadErrCb(e, true);
         };
-        // Replace node wherever it is (could be in <head> or <body> tags)
-        node.parentNode.replaceChild(fb, node);
+
+        parent.appendChild(fb);
+        node.remove();
       } else {
         loadErrCb(e, false);
       }

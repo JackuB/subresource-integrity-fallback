@@ -18,7 +18,7 @@ If we don't want to leave user with an application in nonfunctioning state or at
 
 Script is downloaded, but before its execution, SRI hash is checked against the downloaded resource. If hash check fails, [error event is fired][5] and resource is not executed. This error is not propagated to the `window.onerror` and _afaik_ can't be distinguished from other errors. So we need to catch all of them.
 
-To catch `script/link` errors, we can use [`onerror][6]` handler. But we need to hook it right as the resource is added to the DOM. For that we can use [MutationObserver][7].
+To catch `script/link` errors, we can use [`onerror`][6] handler. But we need to hook it right as the resource is added to the DOM. For that we can use [MutationObserver][7].
 
 ### Fallback flow
 
@@ -33,15 +33,15 @@ Because we are trying to deal with unreliable CDN/network, **all of the followin
 
 ### 1) Add [SRI fallback code][8] to the header
 
-Code must be placed before any resource using `integrity` attribute - ideally in `<head>`, since CSS `link` can also utilize integrity check. Its minified version _(~0,4kb gzipped)_ is also on [`npm][9]`:
+Code must be placed before any resource using `integrity` attribute - ideally in `<head>`, since CSS `link` can also utilize integrity check. Its minified version _(~0,4kb gzipped)_ is also on [`npm`][9]:
 
 **`npm i subresource-integrity-fallback -S`**
 
 ### 2) Add resource fallback data attributes
 
 Then you need to supply `data-sri-fallback` attribute on any resource with `integrity` check. Example use:
-    
-```html    
+
+```html
 <script
 src="https://cdn.example.com/app.js"
 data-sri-fallback="https://example.com/app.js"
@@ -54,9 +54,9 @@ It might be a good idea to either serve fallback resources from same server that
 ### 3) Define a behavior on failure
 
 Last missing piece is the `window.resourceLoadError` function, that will be called when resource with `integrity` check fails to load - as explained above, this reason can come either from normal network problems or resource tampering. Function will get error itself as an argument and boolean indicating whether fallback resource also failed. Function will be called for each failing resource.
-    
+
 ```js
-// In the 
+// In the
 window.resourceLoadError = function(err, isRetry) {
   if (isRetry) {
     return letUserKnowAboutPossibleTampering(err);
@@ -84,4 +84,8 @@ window.resourceLoadError = function(err, isRetry) {
 [10]: https://www.w3.org/TR/SRI/#proxies
 [11]: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 
-  
+## Contributing/developing
+
+- Install dependencies: `npm install`
+- Build the `/dist` and serve the static files: `npm run serve`
+- Test/play with Cypress: `npm run cypress:open`
