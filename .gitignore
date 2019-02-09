@@ -20,3 +20,6 @@ jspm_packages/
 
 # dotenv environment variables file
 .env
+cypress/videos
+cypress/plugins
+cypress/support
